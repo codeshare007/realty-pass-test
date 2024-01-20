@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'; 
+import ProgressBar from './utils/ProgressBar';
 import './App.css';
 
-function App() {
-  
+function App() {  
   const [purchsePrice, setPurchasePrice] = useState(0);
   const [estimate, setEstimate] = useState(0);  
 
@@ -12,11 +12,17 @@ function App() {
   const [percentage, setPercentage] = useState(0);
   
   function calculate() {
-    const decimalPart = 0.5 / 100 * estimate;
-    setFee(Math.floor(Number(purchsePrice) / 250000) > 0 ? 500 + 250 * Math.floor(Number(purchsePrice) / 250000) + parseFloat(decimalPart.toPrecision(2)) : parseFloat(decimalPart.toPrecision(2)));
+    let estimatedPart = 0.5 / 100 * estimate;
+    setFee(Math.floor(Number(purchsePrice) / 250000) > 0 ? ( 500 + 250 * Math.floor(Number(purchsePrice) / 250000) + estimatedPart ) : estimatedPart);
+  };
+
+  useEffect(() => {
     setDue(estimate - fee);
+  }, [fee]);
+
+  useEffect(() => {
     setPercentage(parseFloat(due / estimate) * 100);
-  }
+  }, [fee, due]);
   
   useEffect(() => {
     const progress = document.querySelector('.progress-done');
@@ -24,14 +30,14 @@ function App() {
       progress.style.width = progress.getAttribute('data-done') + '%';
       progress.style.opacity = 1;
     }
-  });
+  }, []);
 
   return (
     <div className="App">
       <div className='container'>
         <div className='left'>
           <div className='input-group'>
-            <label>Purchase Prie</label>
+            <label>Purchase Price</label>
             <input type='number' step={0.01} value={parseFloat(purchsePrice)} onChange={(e) => {
               setPurchasePrice(parseFloat(e.target.value).toFixed(2))
             }} />
@@ -50,17 +56,18 @@ function App() {
           <div className='d-flex'>
             <div className='right-group'>
               <label>Transaction Fee</label>
-              <span>$ {fee}</span>
+              <span>$ {Number(fee).toFixed(2)}</span>
             </div>
             <div className='right-group'>
               <label>Transaction Fee</label>
-              <span>$ {due}</span>
+              <span>$ {Number(due).toFixed(2)}</span>
             </div>
           </div>
           <div className='divider-horizontal'></div>
-          <div className="progress">
-            <div className="progress-done" data-done="{percentage}">
-              {percentage}%
+          <div className='progress-container'>
+            <label>You keep {Number(percentage).toFixed(2)}%</label>
+            <div className="progress">
+              <ProgressBar done={Number(percentage).toFixed(2)}/>
             </div>
           </div>
         </div>

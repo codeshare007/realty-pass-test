@@ -13,16 +13,12 @@ function App() {
   
   function calculate() {
     let estimatedPart = 0.5 / 100 * estimate;
-    setFee(Math.floor(Number(purchsePrice) / 250000) > 0 ? ( 500 + 250 * Math.floor(Number(purchsePrice) / 250000) + estimatedPart ) : estimatedPart);
-  };
-
-  useEffect(() => {
-    setDue(estimate - fee);
-  }, [fee]);
-
-  useEffect(() => {
+    let fee = Math.floor(Number(purchsePrice) / 250000) > 0 ? ( 500 + 250 * Math.floor(Number(purchsePrice) / 250000) + estimatedPart ) : estimatedPart;
+    let due = estimate - fee;
+    setFee(fee);
+    setDue(due);
     setPercentage(parseFloat(due / estimate) * 100);
-  }, [fee, due]);
+  };
   
   useEffect(() => {
     const progress = document.querySelector('.progress-done');
